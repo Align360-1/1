@@ -1,0 +1,23 @@
+@media (max-width:900px){.settings-grid{grid-template-columns:1fr;}}
+@media (max-width:760px){
+  body{flex-direction:column;}
+  /* Sidebar nav doesn't work well as a horizontally-scrolling row once there are
+     more than a handful of sections — replaced with a fixed bottom tab bar below,
+     which stays reachable with one thumb and doesn't need scrolling to discover items. */
+  #sidebar{display:none;}
+  #main{height:auto;}
+  .content{padding:18px 14px calc(78px + env(safe-area-inset-bottom,0px));}
+  .topbar{padding:14px 16px;}
+  .bottom-nav{display:flex;}
+}
+@media (min-width:761px){
+  .bottom-nav, .more-sheet-overlay{display:none !important;}
+}
+@media (max-width:760px){
+  .chart-row{grid-template-columns:1fr;}
+  /* iOS Safari auto-zooms the page when a focused input's font-size is under 16px —
+     bump it up on mobile only so tapping a field (e.g. login) doesn't jolt the view. */
+  input[type=text], input[type=number], input[type=date], input[type=file],
+  input[type=time], input[type=password], select, textarea{font-size:16px;}
+  .report-card-grid{grid-template-columns:1fr;}
+}
