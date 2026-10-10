@@ -1,0 +1,15 @@
+SANDBOX SETUP — one rule block to add in Firebase Console -> Firestore Database -> Rules,
+inside `match /databases/{database}/documents { ... }`, next to your existing rules.
+
+The Sandbox stores its data in collections whose names start with "sbx_" (sbx_trackerRoster,
+sbx_trackerSettings, sbx_trackerDaily, ...). Your existing rules only name the production
+collections, so without this block Firestore rejects every sandbox read/write and the sandbox
+falls back to "Offline".
+
+  match /{sandboxCol}/{docId} {
+    allow read, write: if request.auth != null && sandboxCol.matches('sbx_.*');
+  }
+
+It only matches collections starting with "sbx_", so it grants nothing extra on production.
+Do NOT also make sbx_trackerAuditLog append-only; the sandbox reset needs to clear it.
+Production's append-only trackerAuditLog rule (see firestore.rules.audit-log-snippet.txt) is unchanged.
