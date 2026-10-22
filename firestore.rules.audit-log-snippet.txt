@@ -1,0 +1,51 @@
+This is NOT a full firestore.rules file — it's the one rule block you need to
+add to your existing rules to make the audit log genuinely append-only at the
+database level, which is the piece that can't be enforced from client code no
+matter how the app is written.
+
+Merge this into your project's real firestore.rules (Firebase Console →
+Firestore Database → Rules), inside the existing `match /databases/{database}/documents`
+block, alongside your rules for trackerRoster / trackerDaily / etc:
+
+  match /trackerAuditLog/{entryId} {
+    allow read: if request.auth != null;
+    allow create: if request.auth != null;
+    allow update, delete: if false;   // <-- the actual integrity guarantee
+  }
+
+What this does and doesn't give you:
+
+  DOES:
+  - Once an entry is written, NO client — including one with valid login
+    credentials, including an Admin account, including someone who patches
+    the app's JS in devtools — can update or delete it through Firestore's
+    normal API. That's enforced server-side by Firestore itself, not by
+    anything in this app's code, so it holds even against a modified client.
+
+  DOES NOT:
+  - Verify WHO the actor was beyond "some Firebase Auth session was active."
+    This app signs everyone in anonymously (see initFirebase() in
+    js/firebase.js) and layers its own username/password check in-app on
+    top — so the "ADMIN" / actor name on an entry is only as trustworthy as
+    that in-app check, not a real authenticated identity Firestore itself
+    vouches for.
+  - Capture IP address, device, or session info — Firestore's client SDK
+    doesn't expose that to the writing client, and this app has no server
+    component to capture it another way.
+  - Protect against someone with access to the Firebase Console itself
+    (project owners can edit security rules, and Console access bypasses
+    rules entirely for reads/writes done there).
+  - Give you signed/attested timestamps — the "at" field is client-supplied.
+    The entry also stores "serverAt" (a Firestore server timestamp, immune
+    to a client's clock being wrong or spoofed) — for genuine chronological
+    trust, treat serverAt as authoritative and "at" as the display value.
+
+For all of the DOES NOT items, the fix is a real backend: e.g. Cloud
+Functions as the only writer to trackerAuditLog (so entries are constructed
+server-side from an authenticated Firebase Auth identity, not trusted from
+the client's own claimed actorName/actorRole), plus request.auth in the
+rules checked against actual per-user Firebase accounts instead of the
+current shared anonymous-auth + in-app-password model. That's a genuinely
+bigger project than this snippet — worth doing if audit integrity needs to
+hold up to scrutiny (compliance, disputes, etc), not worth doing if this is
+mainly about having a trail for internal traceability.
