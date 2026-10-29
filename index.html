@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Align360</title>
+<meta name="description" content="Align360 — team performance, quality and operations console.">
+<meta name="application-name" content="Align360">
+<meta name="apple-mobile-web-app-title" content="Align360">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Align360">
+<meta property="og:title" content="Align360">
+<meta property="og:description" content="Team performance, quality and operations console.">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Align360">
+<meta name="twitter:description" content="Team performance, quality and operations console.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css?v=25">
+<link rel="stylesheet" href="css/components.css?v=25">
+<link rel="stylesheet" href="css/responsive.css?v=25">
+<link rel="stylesheet" href="css/ally.css?v=25">
+</head>
+<body class="app-loading">
+
+<div id="appLoading" class="app-loading-screen"><div class="app-loading-spinner"></div></div>
+
+<div id="sidebar">
+  <div class="pin-row">
+    <button class="pin-btn" id="sidebarPinBtn" type="button" aria-label="Pin sidebar"></button>
+  </div>
+  <div class="brand">
+    <div class="brand-mark" style="gap:10px;">
+      <div id="logoWrap" style="display:flex;align-items:center;flex-shrink:0;"></div>
+      <span id="brandName" class="brand-text"></span>
+    </div>
+    <div class="brand-sub brand-text">Performance Console</div>
+  </div>
+  <nav id="navList"></nav>
+  <div class="sidebar-foot">
+    <div id="loggedInAsLabel" style="font-size:11px;color:var(--text-dim);margin-bottom:8px;display:none;"></div>
+    <button class="btn btn-ghost btn-sm" id="themeToggleBtn" style="width:100%;justify-content:center;margin-bottom:6px;"></button>
+    <button class="btn btn-ghost btn-sm" id="logoutBtn" style="width:100%;justify-content:center;margin-bottom:10px;display:none;">🚪 Logout</button>
+    <span class="sync-dot" id="syncDot"></span><span id="syncStatusText">Saved locally in this browser</span>
+  </div>
+</div>
+
+<div id="main">
+  <div class="topbar">
+    <div>
+      <h1 id="pageTitle"></h1>
+      <div class="period" id="pagePeriod">—</div>
+      <div id="periodPickerWrap" style="display:flex;align-items:center;gap:6px;margin-top:8px;"></div>
+    </div>
+    <div id="globalSearchWrap" class="global-search-wrap">
+      <span class="global-search-ic">🔍</span>
+      <input type="text" id="globalSearchInput" class="global-search-input" autocomplete="off">
+      <button type="button" id="globalSearchClearBtn" class="global-search-clear" style="display:none;" title="Clear">✕</button>
+      <div id="globalSearchResults" class="global-search-results" style="display:none;"></div>
+    </div>
+    <div class="section-actions" id="topbarActions"></div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<nav id="bottomNav" class="bottom-nav"></nav>
+<div id="moreSheetOverlay" class="more-sheet-overlay"></div>
+
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-app-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-auth-compat.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/12.16.0/firebase-firestore-compat.min.js"></script>
+<script src="js/env.js?v=25"></script>
+<script src="js/state.js?v=25"></script>
+<script src="js/auth.js?v=25"></script>
+<script src="js/firebase.js?v=25"></script>
+<script src="js/utils.js?v=25"></script>
+<script src="js/roster.js?v=25"></script>
+<script src="js/import-export.js?v=25"></script>
+<script src="js/daily.js?v=25"></script>
+<script src="js/dailysummary.js?v=25"></script>
+<script src="js/leave.js?v=25"></script>
+<script src="js/reports.js?v=25"></script>
+<script src="js/history.js?v=25"></script>
+<script src="js/leo.js?v=25"></script>
+<script src="js/leoreport.js?v=25"></script>
+<script src="js/ews.js?v=25"></script>
+<script src="js/qualityaudit.js?v=25"></script>
+<script src="js/qa-backdated.js?v=25"></script>
+<script src="js/pkt.js?v=25"></script>
+<script src="js/pkt-backdated.js?v=25"></script>
+<script src="js/pkt-editor.js?v=25"></script>
+<script src="js/pkt-play.js?v=25"></script>
+<script src="js/kb.js?v=25"></script>
+<script src="js/kb-docs.js?v=25"></script>
+<script src="js/kb-editor.js?v=25"></script>
+<script src="js/kb-ai.js?v=25"></script>
+<script src="js/kb-import.js?v=25"></script>
+<script src="js/engagementzone.js?v=25"></script>
+<script src="js/audit.js?v=25"></script>
+<script src="js/dashboard.js?v=25"></script>
+<script src="js/clientdashboard.js?v=25"></script>
+<script src="js/qualitydashboard.js?v=25"></script>
+<script src="js/breaks.js?v=25"></script>
+<script src="js/docgen.js?v=25"></script>
+<script src="js/documentation.js?v=25"></script>
+<script src="js/settings.js?v=25"></script>
+<script src="js/ally-scope.js?v=25"></script>
+<script src="js/ally-lang.js?v=25"></script>
+<script src="js/ally-nlu.js?v=25"></script>
+<script src="js/ally-engine.js?v=25"></script>
+<script src="js/ally-ui.js?v=25"></script>
+<script src="js/app.js?v=25"></script>
+</body>
+</html>
