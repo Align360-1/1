@@ -1,0 +1,37 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // INTERIM HARDENING (2026-11-02) — replaces the single "any signed-in user can do everything" rule.
+    //
+    // What it DOES:
+    //   - denies every collection the app does not use (no junk or hidden collections can be created);
+    //   - makes the production Audit Log append-only (entries can be added, never edited or deleted);
+    //   - requires sign-in for everything.
+    //
+    // What it CANNOT do (by design of the current app): every visitor is signed in anonymously, so
+    // Firestore cannot tell a team member from an outsider. Anyone who opens the site can still read,
+    // change or delete the app's data. Real protection needs per-user logins (see CLAUDE.md section 6).
+    //
+    // Production collections the app uses (Audit Log is handled separately below).
+
+    match /trackerAuditLog/{entryId} {
+      allow read, create: if request.auth != null;
+      allow update, delete: if false;
+    }
+
+    match /{col}/{rest=**} {
+      allow read, write: if request.auth != null
+        && col in [
+          'trackerMisc', 'trackerSettings', 'trackerDaily', 'trackerRoster', 'trackerHistory',
+          'trackerDailySummary', 'trackerQualityAudits', 'trackerPkt', 'trackerPktAttempts',
+          'trackerKb', 'trackerKbFeedback'
+        ];
+    }
+
+    // Sandbox copy of the same collections (names start with "sbx_"); fully open so the sandbox can be reset.
+    match /{col}/{rest=**} {
+      allow read, write: if request.auth != null && col.matches('sbx_.*');
+    }
+  }
+}

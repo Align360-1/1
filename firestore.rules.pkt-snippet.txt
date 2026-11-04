@@ -1,0 +1,20 @@
+PKT (weekly knowledge check) — Firestore rules
+==============================================
+The PKT tab stores data in two NEW collections. Your existing rules only name the older collections, so
+without a rule for these two Firestore will reject PKT reads/writes and the tab will fall back to "Offline".
+
+Add inside `match /databases/{database}/documents { ... }` in Firebase Console -> Firestore -> Rules,
+next to your rules for trackerQualityAudits etc:
+
+  match /trackerPkt/{id}          { allow read, write: if request.auth != null; }
+  match /trackerPktAttempts/{id}  { allow read, write: if request.auth != null; }
+
+(The Sandbox already works: its sbx_ prefix is covered by firestore.rules.sandbox-snippet.txt.)
+
+HONEST LIMITS — same as the rest of this app (no backend, everyone signs in anonymously and roles are
+enforced in the browser):
+  - A PKT document includes the correct answers, so a technically-minded agent could read them from
+    browser dev tools. For a weekly knowledge check this is usually acceptable; if you need it airtight,
+    the answer key has to live behind a server (Cloud Function) — tell me and I can design that.
+  - Scores are computed in the agent's browser at submit time. Quality can see every answer in
+    Live results -> Answers, and can reset an attempt, so tampering is visible and reversible.
